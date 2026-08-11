@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AnTâm AI - Trang Chủ</title>
+<link rel="manifest" href="manifest.json"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Fallback Atkinson Hyperlegible Next as requested */
+        @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+    </style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "outline": "#767683",
+                "secondary-container": "#a0f399",
+                "on-primary-container": "#8690ee",
+                "on-primary-fixed-variant": "#343d96",
+                "on-secondary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "tertiary": "#400003",
+                "surface": "#f9f9f9",
+                "on-error": "#ffffff",
+                "outline-variant": "#c6c5d4",
+                "on-primary": "#ffffff",
+                "primary-fixed": "#e0e0ff",
+                "on-tertiary-fixed": "#410003",
+                "primary-container": "#1a237e",
+                "primary-fixed-dim": "#bdc2ff",
+                "tertiary-fixed-dim": "#ffb4ac",
+                "on-secondary-fixed": "#002204",
+                "on-tertiary-container": "#ff635a",
+                "on-surface": "#1a1c1c",
+                "secondary": "#1b6d24",
+                "on-tertiary-fixed-variant": "#93000e",
+                "surface-bright": "#f9f9f9",
+                "on-background": "#1a1c1c",
+                "primary": "#000666",
+                "on-secondary-container": "#217128",
+                "error-container": "#ffdad6",
+                "surface-container-high": "#e8e8e8",
+                "tertiary-fixed": "#ffdad6",
+                "surface-container": "#eeeeee",
+                "tertiary-container": "#670007",
+                "on-error-container": "#93000a",
+                "on-primary-fixed": "#000767",
+                "surface-tint": "#4c56af",
+                "inverse-primary": "#bdc2ff",
+                "inverse-surface": "#2f3131",
+                "surface-dim": "#dadada",
+                "on-surface-variant": "#454652",
+                "background": "#f9f9f9",
+                "on-secondary-fixed-variant": "#005312",
+                "inverse-on-surface": "#f1f1f1",
+                "on-tertiary": "#ffffff",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#88d982",
+                "surface-container-low": "#f3f3f3",
+                "surface-container-highest": "#e2e2e2",
+                "secondary-fixed": "#a3f69c",
+                "surface-variant": "#e2e2e2"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "container-padding": "20px",
+                "section-margin": "40px",
+                "stack-gap": "24px",
+                "touch-target-min": "64px"
+        },
+        "fontFamily": {
+                "headline-md": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "headline-lg": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "body-md": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "body-lg": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "display-sos": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "label-xl": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ],
+                "caption": [
+                        "Atkinson Hyperlegible", "sans-serif"
+                ]
+        },
+        "fontSize": {
+                "headline-md": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "20px",
+                        {
+                                "lineHeight": "30px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "24px",
+                        {
+                                "lineHeight": "34px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "display-sos": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "label-xl": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "caption": [
+                        "18px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "500"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-[120px] pt-[80px]">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface text-primary border-b-4 border-outline flex justify-between items-center px-container-padding h-touch-target-min">
+<h1 class="text-headline-lg font-headline-lg font-black text-primary">AnTâm AI</h1>
+<div class="flex gap-4 items-center">
+<button aria-label="accessibility settings" class="p-2 hover:bg-surface-container-high rounded-full transition-transform active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary" data-icon="settings_accessibility" style="font-size: 32px;">settings_accessibility</span>
+</button>
+<button aria-label="voice over" class="p-2 hover:bg-surface-container-high rounded-full transition-transform active:scale-95 duration-100">
+<span class="material-symbols-outlined text-primary" data-icon="record_voice_over" style="font-size: 32px;">record_voice_over</span>
+</button>
+</div>
+</header>
+<main class="px-container-padding max-w-4xl mx-auto flex flex-col gap-stack-gap">
+  <!-- Greeting & Date/Weather -->
+  <section class="mt-section-margin bg-surface-container-lowest p-6 border-4 border-outline rounded-xl shadow-none">
+    <div class="flex flex-col justify-between items-start gap-6">
+      <div>
+        <h2 class="text-headline-md font-headline-md text-primary">Chào Ông/Bà,</h2>
+        <p class="text-body-lg font-body-lg font-bold text-[#000000]">Hôm nay thế nào?</p>
+      </div>
+      <div class="flex items-center gap-6 bg-surface-container-high p-6 rounded-lg border-2 border-outline-variant w-full">
+        <span class="material-symbols-outlined text-[80px] text-primary" data-icon="partly_cloudy_day" data-weight="fill">partly_cloudy_day</span>
+        <div>
+          <div class="text-[32px] font-headline-lg font-bold">28°C - Nắng Nhẹ</div>
+          <div class="text-[28px] font-headline-md font-bold text-[#000000]">Thứ Tư, 24 Tháng 5</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Actions Grid (Đã chuyển button thành <a> có href) -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-stack-gap">
+    <!-- Mắt Thần -->
+    <a href="mat-than.html" class="bg-primary-container text-on-primary-container p-6 rounded-xl border-4 border-primary hover:bg-surface-tint hover:text-on-primary transition-colors flex flex-col items-center justify-center gap-4 min-h-[200px] active:scale-95 duration-150">
+      <span class="material-symbols-outlined text-[64px]" data-icon="visibility" style="font-variation-settings: 'FILL' 1;">visibility</span>
+      <span class="text-headline-md font-headline-md font-bold">Mắt Thần</span>
+      <span class="text-[24px] font-body-lg font-bold text-[#000000]">Quét thuốc, nhận diện tiền</span>
+    </a>
+
+    <!-- Khiên Cảnh Báo -->
+    <a href="khien.html" class="bg-secondary-container text-on-secondary-container p-6 rounded-xl border-4 border-secondary hover:bg-secondary hover:text-on-secondary transition-colors flex flex-col items-center justify-center gap-4 min-h-[200px] active:scale-95 duration-150">
+      <span class="material-symbols-outlined text-[64px]" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+      <span class="text-headline-md font-headline-md font-bold">Khiên</span>
+      <span class="text-[24px] font-body-lg font-bold text-[#000000]">Kiểm tra lừa đảo</span>
+    </a>
+
+    <!-- Trợ Lý -->
+    <a href="tro-ly.html" class="bg-surface-variant text-on-surface p-6 rounded-xl border-4 border-outline hover:bg-surface-dim transition-colors flex flex-col items-center justify-center gap-4 min-h-[200px] active:scale-95 duration-150">
+      <span class="material-symbols-outlined text-[64px] text-[#b8860b]" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+      <span class="text-headline-md font-headline-md font-bold">Trợ Lý</span>
+      <span class="text-[24px] font-body-lg font-bold text-[#000000]">Hỏi đáp, nhắc nhở</span>
+    </a>
+
+    <!-- SOS -->
+    <a href="tro-ly.html" class="bg-error text-on-error p-6 rounded-xl border-4 border-tertiary hover:bg-on-error-container hover:text-error-container transition-colors flex flex-col items-center justify-center gap-4 min-h-[200px] active:scale-95 duration-150">
+      <span class="material-symbols-outlined text-[80px]" data-icon="emergency" style="font-variation-settings: 'FILL' 1;">emergency</span>
+      <span class="text-display-sos font-display-sos text-center">SOS</span>
+    </a>
+  </section>
+</main>
+
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-4 bg-surface h-[100px] border-t-4 border-outline">
+  <!-- Active: Trang Chủ -->
+  <a href="index.html" aria-label="Trang Chủ" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl p-4 min-w-[80px] scale-90 duration-150 border-4 border-primary">
+    <span class="material-symbols-outlined" data-icon="home" style="font-size: 32px;">home</span>
+    <span class="text-label-xl font-label-xl mt-1 font-bold">Trang Chủ</span>
+  </a>
+
+  <!-- Inactive: Mắt Thần -->
+  <a href="mat-than.html" aria-label="Mắt Thần" class="flex flex-col items-center justify-center text-on-surface-variant p-4 hover:bg-surface-container-highest rounded-xl transition-colors">
+    <span class="material-symbols-outlined" data-icon="visibility" style="font-size: 32px;">visibility</span>
+    <span class="text-label-xl font-label-xl mt-1 font-bold text-[#000000]">Mắt Thần</span>
+  </a>
+
+  <!-- Inactive: Khiên -->
+  <a href="khien.html" aria-label="Khiên" class="flex flex-col items-center justify-center text-on-surface-variant p-4 hover:bg-surface-container-highest rounded-xl transition-colors">
+    <span class="material-symbols-outlined" data-icon="verified_user" style="font-size: 32px;">verified_user</span>
+    <span class="text-label-xl font-label-xl mt-1 font-bold text-[#000000]">Khiên</span>
+  </a>
+
+  <!-- Inactive: Trợ Lý -->
+  <a href="tro-ly.html" aria-label="Trợ Lý" class="flex flex-col items-center justify-center text-on-surface-variant p-4 hover:bg-surface-container-highest rounded-xl transition-colors">
+    <span class="material-symbols-outlined" data-icon="mic" style="font-size: 32px;">mic</span>
+    <span class="text-label-xl font-label-xl mt-1 font-bold text-[#000000]">Trợ Lý</span>
+  </a>
+</nav>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+</body></html>

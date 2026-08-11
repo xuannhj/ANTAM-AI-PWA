@@ -1,0 +1,35 @@
+{
+  "id": "/index.html",
+  "short_name": "AnTâm AI",
+  "name": "AnTâm AI - Trợ Lý Cho Người Cao Tuổi",
+  "description": "Ứng dụng hỗ trợ người cao tuổi đọc thuốc, phòng tránh lừa đảo và gọi trợ giúp khẩn cấp.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3063/3063822.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://dummyimage.com/1280x720/0a192f/ffffff.png&text=AnTam+AI+Desktop",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Giao diện Desktop"
+    },
+    {
+      "src": "https://dummyimage.com/750x1334/0a192f/ffffff.png&text=AnTam+AI+Mobile",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Giao diện Mobile"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#ffffff",
+  "theme_color": "#0a192f",
+  "display": "standalone",
+  "orientation": "portrait"
+}
