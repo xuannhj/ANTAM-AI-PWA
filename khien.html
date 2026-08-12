@@ -134,6 +134,7 @@
 </nav>
 
 <script>
+  // Tự động đăng ký Service Worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
   }
@@ -170,13 +171,15 @@
       if (scamInput) {
         scamInput.value = currentTranscript;
       }
-      checkScamPattern(currentTranscript);
+      
+      // Nối kết quả thu âm sang Bộ lọc Regex nâng cao
+      analyzeScam(currentTranscript);
     };
 
     recognition.onerror = (event) => {
       console.error("Lỗi thu âm:", event.error);
       if (event.error === 'not-allowed') {
-        alert("Bạn cần cấp quyền cấp Micro trên trình duyệt!");
+        alert("Bạn cần cấp quyền Micro trên trình duyệt!");
       }
       stopListeningUI();
     };
@@ -188,7 +191,7 @@
 
   function toggleListening() {
     if (!recognition) {
-      alert("Trình duyệt không hỗ trợ Web Speech API. Hãy sử dụng Google Chrome hoặc Microsoft Edge.");
+      alert("Trình duyệt không hỗ trợ Web Speech API. Hãy dùng Chrome hoặc Edge.");
       return;
     }
 
@@ -212,42 +215,103 @@
   }
 
   // ==========================================
-  // 2. BỘ LỌC REGEX PHÁT HIỆN LỪA ĐẢO
+  // 2. BỘ LỌC REGEX TÍNH ĐIỂM RỦI RO (RISK SCORING)
   // ==========================================
-  const scamPatterns = [
-    /phạt nguội/i,
-    /vi phạm giao thông/i,
-    /công an/i,
-    /yêu cầu cài (ứng dụng|app)/i,
-    /khóa tài khoản/i,
-    /trúng thưởng/i,
-    /chuyển tiền/i,
-    /mã otp/i,
-    /xác thực tài khoản/i,
-    /cục thuế/i
+  const SCAM_PATTERNS = [
+    {
+      name: "Mạo danh cơ quan chức năng",
+      regex: /(công an|viện kiểm sát|tòa án|bộ công an|lệnh bắt|phạt nguội|điều tra|cục thuế)/gui,
+      weight: 40
+    },
+    {
+      name: "Yêu cầu chuyển tiền / OTP",
+      regex: /(chuyển tiền|chuyển khoản|mã otp|mã xác thực|mật khẩu|mã pin|số tài khoản|stk)/gui,
+      weight: 30
+    },
+    {
+      name: "Dụ dỗ trúng thưởng / Việc làm online",
+      regex: /(trúng thưởng|nhận quà|tri ân|việc làm tại nhà|nạp tiền làm nhiệm vụ|chốt đơn)/gui,
+      weight: 20
+    }
   ];
 
-  function checkScamPattern(text) {
+  function checkScamText(text) {
     if (!text || text.trim() === '') {
-      if (warningCard) warningCard.classList.add('hidden');
-      return;
+      return { riskLevel: "SAFE", riskScore: 0, categories: [] };
     }
 
-    const isScam = scamPatterns.some(pattern => pattern.test(text));
+    let riskScore = 0;
+    let detectedCategories = [];
 
-    if (warningCard) {
-      if (isScam) {
-        warningCard.classList.remove('hidden');
-      } else {
-        warningCard.classList.add('hidden');
+    SCAM_PATTERNS.forEach(pattern => {
+      // Reset chỉ số match của regex trước khi test (cực kỳ quan trọng với cờ /g)
+      pattern.regex.lastIndex = 0; 
+      
+      if (pattern.regex.test(text)) {
+        riskScore += pattern.weight;
+        detectedCategories.push(pattern.name);
       }
+    });
+
+    if (riskScore >= 50) {
+      return {
+        riskLevel: "HIGH",
+        riskScore: riskScore,
+        message: "⚠️ CẢNH BÁO NGUY HIỂM: Phát hiện dấu hiệu lừa đảo cao!",
+        categories: detectedCategories
+      };
+    } else if (riskScore > 0) {
+      return {
+        riskLevel: "MEDIUM",
+        riskScore: riskScore,
+        message: "⚡ CHÚ Ý: Nội dung chứa từ khóa nhạy cảm.",
+        categories: detectedCategories
+      };
+    } else {
+      return {
+        riskLevel: "SAFE",
+        riskScore: 0,
+        message: "✅ Nội dung an toàn.",
+        categories: []
+      };
     }
   }
 
-  function manualCheck() {
-    if (scamInput) {
-      checkScamPattern(scamInput.value);
+  // ==========================================
+  // 3. HIỂN THỊ KẾT QUẢ LÊN GIAO DIỆN (UI UPDATE)
+  // ==========================================
+  function analyzeScam(text) {
+    const result = checkScamText(text);
+
+    if (!warningCard) return;
+
+    if (result.riskLevel === "HIGH" || result.riskLevel === "MEDIUM") {
+      warningCard.classList.remove('hidden');
+
+      // Cập nhật giao diện theo mức độ rủi ro
+      const titleEl = warningCard.querySelector('h2');
+      const msgEl = warningCard.querySelector('p');
+      const cateEl = warningCard.querySelector('.text-\\[16px\\]');
+
+      if (result.riskLevel === "HIGH") {
+        warningCard.className = "bg-[#ffebe9] p-6 border-4 border-red-600 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl";
+        if (titleEl) titleEl.innerText = "CẢNH BÁO NGUY HIỂM";
+      } else {
+        warningCard.className = "bg-[#fff8e1] p-6 border-4 border-amber-500 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl";
+        if (titleEl) titleEl.innerText = "CHÚ Ý NHẠY CẢM";
+      }
+
+      if (msgEl) msgEl.innerText = result.message;
+      if (cateEl) cateEl.innerText = "Lý do: " + result.categories.join(", ");
+
+    } else {
+      warningCard.classList.add('hidden');
     }
+  }
+
+  // Sự kiện kiểm tra thủ công & gõ phím
+  function manualCheck() {
+    if (scamInput) analyzeScam(scamInput.value);
   }
 
   async function pasteClipboard() {
@@ -255,16 +319,16 @@
       const text = await navigator.clipboard.readText();
       if (scamInput) {
         scamInput.value = text;
-        checkScamPattern(text);
+        analyzeScam(text);
       }
     } catch (err) {
-      alert("Không thể dán tự động. Bạn hãy dán bằng phím Ctrl+V nhé!");
+      alert("Hãy dùng phím Ctrl+V để dán nhé!");
     }
   }
 
   if (scamInput) {
     scamInput.addEventListener('input', (e) => {
-      checkScamPattern(e.target.value);
+      analyzeScam(e.target.value);
     });
   }
 </script>
