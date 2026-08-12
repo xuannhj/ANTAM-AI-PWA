@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AnTâm AI - Thử nghiệm Thu Âm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <style>
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .listening { animation: pulse-ring 1.5s infinite ease-in-out; background-color: #ef4444 !important; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-6 font-sans">
+
+  <div class="bg-white rounded-3xl shadow-xl p-8 max-w-md w-full flex flex-col items-center gap-6 text-center border-4 border-slate-200">
+    <h1 class="text-2xl font-black text-blue-900">Thử Nghiệm Thu Âm Giọng Nói</h1>
+    
+    <!-- Khung hiển thị văn bản thu âm được -->
+    <div class="w-full min-h-[120px] p-4 bg-slate-50 rounded-2xl border-2 border-slate-300 text-left flex items-center">
+      <p id="output-text" class="text-xl font-medium text-slate-700 italic">
+        Nhấn nút micro bên dưới và bắt đầu nói...
+      </p>
+    </div>
+
+    <!-- Thông báo trạng thái -->
+    <div id="status-msg" class="text-lg font-bold text-slate-500">
+      Micro đang tắt
+    </div>
+
+    <!-- Nút Bật/Tắt Micro -->
+    <button id="mic-btn" onclick="toggleListening()" class="w-24 h-24 bg-blue-900 text-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-95">
+      <span class="material-symbols-outlined text-5xl">mic</span>
+    </button>
+  </div>
+
+  <script>
+    // 1. Kiểm tra hỗ trợ trình duyệt
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    let isListening = false;
+
+    const micBtn = document.getElementById('mic-btn');
+    const outputText = document.getElementById('output-text');
+    const statusMsg = document.getElementById('status-msg');
+
+    if (!SpeechRecognition) {
+      statusMsg.innerText = "Trình duyệt không hỗ trợ Web Speech API!";
+      statusMsg.className = "text-lg font-bold text-red-600";
+      micBtn.disabled = true;
+      micBtn.classList.add('opacity-50');
+    } else {
+      // 2. Khởi tạo cấu hình
+      recognition = new SpeechRecognition();
+      recognition.lang = 'vi-VN';
+      recognition.continuous = false; // Ngừng thu khi nói xong 1 câu
+      recognition.interimResults = true; // Trả kết quả chữ nhảy theo thời gian thực
+
+      // 3. Đăng ký các sự kiện (Events)
+      recognition.onstart = () => {
+        isListening = true;
+        statusMsg.innerText = "Đang lắng nghe... Hãy nói đi!";
+        statusMsg.className = "text-lg font-bold text-red-600 animate-pulse";
+        micBtn.classList.add('listening');
+        outputText.classList.remove('italic');
+      };
+
+      recognition.onresult = (event) => {
+        let currentTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          currentTranscript += event.results[i][0].transcript;
+        }
+        outputText.innerText = currentTranscript;
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Lỗi:", event.error);
+        if (event.error === 'not-allowed') {
+          statusMsg.innerText = "Lỗi: Bạn chưa cấp quyền Micro!";
+        } else if (event.error === 'no-speech') {
+          statusMsg.innerText = "Không nghe thấy tiếng, hãy thử lại.";
+        } else {
+          statusMsg.innerText = "Có lỗi xảy ra: " + event.error;
+        }
+        statusMsg.className = "text-lg font-bold text-red-500";
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        statusMsg.innerText = "Micro đang tắt";
+        statusMsg.className = "text-lg font-bold text-slate-500";
+        micBtn.classList.remove('listening');
+      };
+    }
+
+    // 4. Hàm Bật/Tắt Micro khi bấm nút
+    function toggleListening() {
+      if (!recognition) return;
+
+      if (isListening) {
+        recognition.stop();
+      } else {
+        try {
+          outputText.innerText = "Đang xử lý...";
+          outputText.classList.add('italic');
+          recognition.start();
+        } catch (err) {
+          console.error("Không thể bật mic:", err);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

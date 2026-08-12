@@ -77,21 +77,25 @@
     <label class="font-bold text-[18px] text-on-surface block" for="scam-input">Nội dung nghi vấn:</label>
     <div class="relative w-full">
       <textarea id="scam-input" class="w-full min-h-[140px] p-4 pr-16 text-[18px] border-2 border-outline rounded-lg bg-surface focus:outline-none" placeholder="Nhập tin nhắn, đường link, hoặc số điện thoại vào đây..."></textarea>
-      <button aria-label="Nói để nhập" class="absolute bottom-4 right-4 h-12 w-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md">
+      
+      <!-- ĐÃ THÊM id="mic-btn" VÀ DÙNG onclick -->
+      <button id="mic-btn" type="button" onclick="toggleListening()" aria-label="Nói để nhập" class="absolute bottom-4 right-4 h-12 w-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-md transition-all active:scale-95">
         <span class="material-symbols-outlined text-[28px]">mic</span>
       </button>
     </div>
-    <button class="w-full min-h-[64px] bg-secondary-container text-on-secondary-container text-[18px] font-bold rounded-lg border-4 border-secondary flex items-center justify-center gap-2">
+    
+    <button type="button" onclick="pasteClipboard()" class="w-full min-h-[64px] bg-secondary-container text-on-secondary-container text-[18px] font-bold rounded-lg border-4 border-secondary flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">content_paste</span>
       DÁN TIN NHẮN VỪA CHÉP
     </button>
-    <button class="w-full min-h-[72px] bg-primary text-on-primary text-[22px] font-bold rounded-lg border-4 border-primary flex items-center justify-center gap-2 shadow-lg">
+    <button type="button" onclick="manualCheck()" class="w-full min-h-[72px] bg-primary text-on-primary text-[22px] font-bold rounded-lg border-4 border-primary flex items-center justify-center gap-2 shadow-lg hover:bg-primary-container active:scale-95 transition-all">
       <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1; font-size: 32px;">search</span>
       KIỂM TRA NGAY
     </button>
   </section>
 
-  <section class="bg-[#ffebe9] p-6 border-4 border-red-600 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl">
+  <!-- ĐÃ THÊM id="warning-card" VÀ MẶC ĐỊNH ẨN (hidden) -->
+  <section id="warning-card" class="bg-[#ffebe9] p-6 border-4 border-red-600 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl hidden">
     <div class="min-w-[64px] min-h-[64px] bg-red-600 text-white rounded-full flex items-center justify-center shrink-0">
       <span class="material-symbols-outlined text-[40px]" style="font-variation-settings: 'FILL' 1;">warning</span>
     </div>
@@ -106,7 +110,7 @@
   </section>
 </main>
 
-<!-- BottomNavBar (ACTIVE: Khiên) -->
+<!-- BottomNavBar -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface h-[88px] border-t-2 border-outline-variant shadow-lg">
   <a href="index.html" aria-label="Trang Chủ" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest rounded-xl transition-colors">
     <span class="material-symbols-outlined text-[28px] mb-1">home</span>
@@ -118,7 +122,6 @@
     <span class="text-[15px] font-bold text-[#000000]">Mắt Thần</span>
   </a>
 
-  <!-- Active khiên -->
   <a href="khien.html" aria-label="Khiên" class="flex flex-col items-center justify-center bg-primary-container text-on-primary px-5 py-2.5 rounded-2xl shadow-md">
     <span class="material-symbols-outlined text-[28px] mb-1" style="font-variation-settings: 'FILL' 1;">verified_user</span>
     <span class="text-[15px] font-bold">Khiên</span>
@@ -133,6 +136,136 @@
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
+  }
+
+  // ==========================================
+  // 1. TÍCH HỢP WEB SPEECH API (THU ÂM)
+  // ==========================================
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const scamInput = document.getElementById('scam-input');
+  const micBtn = document.getElementById('mic-btn');
+  const warningCard = document.getElementById('warning-card');
+  let recognition = null;
+  let isListening = false;
+
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      isListening = true;
+      if (micBtn) {
+        micBtn.classList.add('bg-red-600', 'animate-pulse');
+        micBtn.classList.remove('bg-primary');
+      }
+    };
+
+    recognition.onresult = (event) => {
+      let currentTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        currentTranscript += event.results[i][0].transcript;
+      }
+      if (scamInput) {
+        scamInput.value = currentTranscript;
+      }
+      checkScamPattern(currentTranscript);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Lỗi thu âm:", event.error);
+      if (event.error === 'not-allowed') {
+        alert("Bạn cần cấp quyền cấp Micro trên trình duyệt!");
+      }
+      stopListeningUI();
+    };
+
+    recognition.onend = () => {
+      stopListeningUI();
+    };
+  }
+
+  function toggleListening() {
+    if (!recognition) {
+      alert("Trình duyệt không hỗ trợ Web Speech API. Hãy sử dụng Google Chrome hoặc Microsoft Edge.");
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+    } else {
+      try {
+        recognition.start();
+      } catch (err) {
+        console.error("Không thể bật Mic:", err);
+      }
+    }
+  }
+
+  function stopListeningUI() {
+    isListening = false;
+    if (micBtn) {
+      micBtn.classList.remove('bg-red-600', 'animate-pulse');
+      micBtn.classList.add('bg-primary');
+    }
+  }
+
+  // ==========================================
+  // 2. BỘ LỌC REGEX PHÁT HIỆN LỪA ĐẢO
+  // ==========================================
+  const scamPatterns = [
+    /phạt nguội/i,
+    /vi phạm giao thông/i,
+    /công an/i,
+    /yêu cầu cài (ứng dụng|app)/i,
+    /khóa tài khoản/i,
+    /trúng thưởng/i,
+    /chuyển tiền/i,
+    /mã otp/i,
+    /xác thực tài khoản/i,
+    /cục thuế/i
+  ];
+
+  function checkScamPattern(text) {
+    if (!text || text.trim() === '') {
+      if (warningCard) warningCard.classList.add('hidden');
+      return;
+    }
+
+    const isScam = scamPatterns.some(pattern => pattern.test(text));
+
+    if (warningCard) {
+      if (isScam) {
+        warningCard.classList.remove('hidden');
+      } else {
+        warningCard.classList.add('hidden');
+      }
+    }
+  }
+
+  function manualCheck() {
+    if (scamInput) {
+      checkScamPattern(scamInput.value);
+    }
+  }
+
+  async function pasteClipboard() {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (scamInput) {
+        scamInput.value = text;
+        checkScamPattern(text);
+      }
+    } catch (err) {
+      alert("Không thể dán tự động. Bạn hãy dán bằng phím Ctrl+V nhé!");
+    }
+  }
+
+  if (scamInput) {
+    scamInput.addEventListener('input', (e) => {
+      checkScamPattern(e.target.value);
+    });
   }
 </script>
 </body>
