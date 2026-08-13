@@ -1,5 +1,5 @@
 // 1. Tên hòm Cache (Mỗi lần update giao diện HTML/CSS, chỉ cần đổi v1 -> v2, v3,...)
-const CACHE_NAME = 'antam-ai-v4';
+const CACHE_NAME = 'antam-ai-v10';
 
 // 2. Danh sách các file cần lưu trữ offline
 const ASSETS_TO_CACHE = [
@@ -8,7 +8,9 @@ const ASSETS_TO_CACHE = [
   './mat-than.html',
   './khien.html',
   './tro-ly.html',
-  './manifest.json'
+  './manifest.json',
+  './audio/canh-bao-do.mp3',
+  './audio/canh-bao-vang.mp3'
 ];
 
 // ==========================================

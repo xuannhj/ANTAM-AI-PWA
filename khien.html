@@ -132,7 +132,6 @@
     <span class="text-[15px] font-bold text-[#000000]">Trợ Lý</span>
   </a>
 </nav>
-
 <script>
   // Tự động đăng ký Service Worker
   if ('serviceWorker' in navigator) {
@@ -172,7 +171,7 @@
         scamInput.value = currentTranscript;
       }
       
-      // Nối kết quả thu âm sang Bộ lọc Regex nâng cao
+      // Nối kết quả thu âm sang Bộ lọc Regex
       analyzeScam(currentTranscript);
     };
 
@@ -244,8 +243,7 @@
     let detectedCategories = [];
 
     SCAM_PATTERNS.forEach(pattern => {
-      // Reset chỉ số match của regex trước khi test (cực kỳ quan trọng với cờ /g)
-      pattern.regex.lastIndex = 0; 
+      pattern.regex.lastIndex = 0; // Reset index regex
       
       if (pattern.regex.test(text)) {
         riskScore += pattern.weight;
@@ -278,7 +276,35 @@
   }
 
   // ==========================================
-  // 3. HIỂN THỊ KẾT QUẢ LÊN GIAO DIỆN (UI UPDATE)
+  // 3. KHỞI TẠO BỘ PHÁT ÂM THANH CẢNH BÁO (AUDIO PLAYER)
+  // ==========================================
+  let alertAudio = null;
+
+  function playAlertSound(type) {
+    // Dừng âm thanh cũ nếu đang phát để tránh dội tiếng
+    if (alertAudio) {
+      alertAudio.pause();
+      alertAudio.currentTime = 0;
+    }
+
+    // Chọn file âm thanh tương ứng
+    const src = (type === 'HIGH') ? './audio/canh-bao-do.mp3' : './audio/canh-bao-vang.mp3';
+    alertAudio = new Audio(src);
+
+    alertAudio.play().catch(err => {
+      console.warn("Chưa tương tác với trang nên chưa thể tự động phát audio:", err);
+    });
+  }
+
+  function stopAlertSound() {
+    if (alertAudio) {
+      alertAudio.pause();
+      alertAudio.currentTime = 0;
+    }
+  }
+
+  // ==========================================
+  // 4. HIỂN THỊ KẾT QUẢ LÊN GIAO DIỆN (UI UPDATE)
   // ==========================================
   function analyzeScam(text) {
     const result = checkScamText(text);
@@ -288,7 +314,6 @@
     if (result.riskLevel === "HIGH" || result.riskLevel === "MEDIUM") {
       warningCard.classList.remove('hidden');
 
-      // Cập nhật giao diện theo mức độ rủi ro
       const titleEl = warningCard.querySelector('h2');
       const msgEl = warningCard.querySelector('p');
       const cateEl = warningCard.querySelector('.text-\\[16px\\]');
@@ -296,9 +321,16 @@
       if (result.riskLevel === "HIGH") {
         warningCard.className = "bg-[#ffebe9] p-6 border-4 border-red-600 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl";
         if (titleEl) titleEl.innerText = "CẢNH BÁO NGUY HIỂM";
+        
+        // Phát âm thanh đỏ
+        playAlertSound('HIGH');
+
       } else {
         warningCard.className = "bg-[#fff8e1] p-6 border-4 border-amber-500 rounded-xl flex flex-col md:flex-row items-center gap-6 shadow-xl";
         if (titleEl) titleEl.innerText = "CHÚ Ý NHẠY CẢM";
+
+        // Phát âm thanh vàng
+        playAlertSound('MEDIUM');
       }
 
       if (msgEl) msgEl.innerText = result.message;
@@ -306,6 +338,8 @@
 
     } else {
       warningCard.classList.add('hidden');
+      // Dừng âm thanh nếu nội dung an toàn
+      stopAlertSound();
     }
   }
 
