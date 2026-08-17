@@ -46,34 +46,42 @@
 </header>
 
 <main class="flex-grow max-w-3xl mx-auto w-full px-6 flex flex-col gap-6">
-  <!-- Mode Selection -->
-  <div class="flex w-full rounded-2xl border-4 border-outline overflow-hidden bg-slate-100 mt-4">
-    <button class="flex-1 py-3 bg-primary text-white font-bold text-[18px]">Quét Thuốc</button>
-    <button class="flex-1 py-3 border-l-4 border-outline text-black font-bold text-[18px]">Đọc Tiền</button>
-    <button class="flex-1 py-3 border-l-4 border-outline text-black font-bold text-[18px]">Đọc Hóa Đơn</button>
-  </div>
+  <!-- Input ẩn để gọi Camera sau trên điện thoại -->
+<input 
+  type="file" 
+  id="camera-input" 
+  accept="image/*" 
+  capture="environment" 
+  class="hidden" 
+/>
+ <!-- MỚI: Thêm id, class btn-mode và data-mode -->
+<div class="flex gap-2 justify-center my-4">
+  <button id="btn-mode-medicine" class="btn-mode px-4 py-2 rounded-xl font-bold bg-primary text-white" data-mode="MEDICINE">💊 Đọc vỏ thuốc</button>
+  <button id="btn-mode-receipt" class="btn-mode px-4 py-2 rounded-xl font-bold bg-surface-container-highest text-on-surface" data-mode="RECEIPT">🧾 Đọc hóa đơn</button>
+  <button id="btn-mode-currency" class="btn-mode px-4 py-2 rounded-xl font-bold bg-surface-container-highest text-on-surface" data-mode="CURRENCY">💵 Nhận diện tiền</button>
+</div>
 
   <!-- Camera Area -->
-  <div class="w-full aspect-[4/3] bg-slate-200 rounded-2xl border-4 border-outline relative flex items-center justify-center">
-    <button class="absolute top-4 right-4 h-12 w-12 bg-white/80 rounded-full flex items-center justify-center border-2 border-outline">
-      <span class="material-symbols-outlined text-[28px]">flash_on</span>
-    </button>
-    <div class="inset-4 border-4 border-dashed border-primary/40 rounded-xl absolute pointer-events-none"></div>
-  </div>
+<!-- Nút chụp ảnh chính -->
+<button id="btn-capture" class="w-full min-h-[72px] bg-primary text-white text-[22px] font-bold rounded-2xl border-4 border-primary flex items-center justify-center gap-3 shadow-lg hover:opacity-90 active:scale-95 transition-all">
+  <span class="material-symbols-outlined text-[36px]">photo_camera</span>
+  <span>CHỤP ẢNH / TẢI ẢNH</span>
+</button>
 
-  <button class="w-full min-h-[72px] bg-primary text-white text-[22px] font-bold rounded-2xl border-4 border-primary flex items-center justify-center gap-3 shadow-lg">
-    <span class="material-symbols-outlined text-[36px]">photo_camera</span>
-    <span>QUÉT THUỐC / TIỀN</span>
-  </button>
-
-  <div class="bg-slate-200 rounded-2xl border-4 border-outline p-6 flex flex-col gap-4">
-    <div class="bg-white rounded-xl p-4 text-center">
-      <p class="text-[22px] font-bold text-black">"Thuốc Paracetamol, uống sau khi ăn"</p>
-    </div>
-    <button class="w-full py-3 bg-green-200 text-green-900 rounded-xl border-2 border-green-600 font-bold text-[18px] flex items-center justify-center gap-2">
-      <span class="material-symbols-outlined">volume_up</span> Đọc Lại
-    </button>
+<!-- Vùng hiển thị kết quả (Mặc định ẩn, chụp xong mới hiện) -->
+<div id="preview-container" class="flex flex-col gap-4 hidden">
+  <img id="image-preview" class="w-full max-h-[300px] object-contain rounded-xl border-2 border-outline bg-black/5" alt="Xem trước ảnh" />
+  
+  <!-- Thông báo trạng thái đang tải -->
+  <div id="loading-spinner" class="p-4 bg-amber-50 border-2 border-amber-400 rounded-xl text-amber-900 font-bold text-center animate-pulse hidden">
+    ⏳ Đang đọc thông tin từ ảnh, vui lòng chờ...
   </div>
+  
+  <!-- Khung in nội dung do Gemini trả về -->
+ <!-- Khung kết quả chữ siêu to cho người cao tuổi -->
+<div class="bg-white p-6 border-4 border-primary rounded-2xl shadow-lg mt-4">
+  <div id="result-display" class="text-[28px] sm:text-[32px] font-black text-black leading-snug whitespace-pre-line tracking-wide"></div>
+</div>
 </main>
 
 <!-- BottomNavBar (ACTIVE: Mắt Thần) -->
@@ -95,6 +103,12 @@
     <span class="text-[15px] font-bold leading-tight">Trợ Lý</span>
   </a>
 </nav>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+<script type="module" src="./js/app.js"></script>
 
 </body>
 </html>
